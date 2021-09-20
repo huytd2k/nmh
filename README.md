@@ -1,4 +1,4 @@
-##Installation
+## Installation
 ```bash
 python -m pip install nmh
 ```
