@@ -2,8 +2,11 @@
 Why use third party if I can write???"""
 from dataclasses import dataclass
 import json
+import os
 from typing import Optional
 import requests
+
+from nmh.pathutils import cd
 
 
 class GithubClientException(Exception):
@@ -40,3 +43,18 @@ class GithubClient:
             raise GithubClientException("Cannot create repository", res.json())
 
         return res.json()
+
+    def bootstrap_repo(self, repo_path: str, create_option: CreateRepoOption = None):
+        name = os.path.split(os.path.abspath(repo_path))[-1]
+        create_option = create_option or CreateRepoOption(name)
+        create_result = self.create_repo(create_option)
+        ssh_url = create_result.get("ssh_url")
+
+        with cd(repo_path):
+            os.system("rm -rf .git")
+            os.system("git init")
+            os.system("git add .")
+            os.system('git commit -m "Init"')
+            os.system(f"git remote add origin {ssh_url}")
+            os.system(f"git branch -M main")
+            os.system("git push -u origin main")
