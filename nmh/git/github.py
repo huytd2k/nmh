@@ -1,12 +1,28 @@
 """This module contains functions to comminucate with github api,
 Why use third party if I can write???"""
+from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
 from typing import Optional
+from abc import ABC, abstractmethod
 import requests
 
 from nmh.pathutils import cd
+
+
+class GitRemoteClient(ABC):
+    @abstractmethod
+    def create_repo(self, options: CreateRepoOption) -> str:
+        """Create repo in remote repository
+
+        Args:
+            options (CreateRepoOption): create options
+
+        Returns:
+            str: ssh-url of remote repo
+        """
+        pass
 
 
 class GithubClientException(Exception):
@@ -24,7 +40,7 @@ class CreateRepoOption:
 DEFAULT_GITHUB_API = "https://api.github.com"
 
 
-class GithubClient:
+class GithubClient(GitRemoteClient):
     def __init__(self, token: str, host: str = DEFAULT_GITHUB_API) -> None:
         self._token = token
         self._host = host
@@ -42,7 +58,7 @@ class GithubClient:
         if res.status_code != 201:
             raise GithubClientException("Cannot create repository", res.json())
 
-        return res.json()
+        return res.json().get("ssh_url")
 
     def bootstrap_repo(self, repo_path: str, create_option: CreateRepoOption = None):
         name = os.path.split(os.path.abspath(repo_path))[-1]

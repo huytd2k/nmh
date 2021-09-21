@@ -15,12 +15,12 @@ class TestGithubClient(TestCase):
         # Happy case
         client = GithubClient(token="token")
         mock_post.return_value.status_code = 201
-        mock_post.return_value.json = lambda: {}
+        mock_post.return_value.json = lambda: {"ssh_url": "link"}
 
         ret = client.create_repo(
             CreateRepoOption("created_with_api", private=True, description="des")
         )
-        assert ret == {}
+        assert ret == "link"
         mock_post.assert_called_once_with(
             f"{client._host}/user/repos",
             headers={
