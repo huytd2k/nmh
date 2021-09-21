@@ -26,7 +26,6 @@ jobs:
             poetry-${{ hashFiles('**/poetry.lock')}}
       - name: Set poetry config
         run: |
-          poetry config settings.virtualenvs.in-project false
           poetry config settings.virtualenvs.path ~/.virtualenvs
       - name: Install deps
         run: poetry install
