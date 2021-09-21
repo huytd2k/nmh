@@ -30,3 +30,7 @@ jobs:
       - name: Install deps
         run: poetry install
         if: steps.cache.output.cache-hit != 'true'
+      - name: Linting
+        run: poetry run pylint .
+      - name: Testing
+        run: poetry run pytest --cov . -n 2
