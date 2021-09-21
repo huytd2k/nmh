@@ -33,6 +33,6 @@ jobs:
       - name: Linting
         run: poetry run pylint **/*.py
       - name: Testing
-        run: poetry run pytest --cov=nmh tests/
+        run: poetry run pytest --cov=./ tests/
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
