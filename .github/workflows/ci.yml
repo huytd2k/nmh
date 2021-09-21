@@ -32,7 +32,7 @@ jobs:
         if: steps.cache.output.cache-hit != 'true'
       - name: Linting
         run: poetry run pylint **/*.py
-      - name: Testing
-        run: poetry run pytest --cov=./ tests/
+      - name: Testing and collect coverage
+        run: poetry run coverage run -m pytest tests/
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
