@@ -11,7 +11,7 @@ import requests
 from nmh.pathutils import cd
 
 
-class GitRemoteClient(ABC):
+class GitRemoteClient(ABC):  # pylint: disable=R0903
     @abstractmethod
     def create_repo(self, options: CreateRepoOption) -> str:
         """Create repo in remote repository
@@ -22,7 +22,6 @@ class GitRemoteClient(ABC):
         Returns:
             str: ssh-url of remote repo
         """
-        pass
 
 
 class GithubClientException(Exception):
@@ -61,8 +60,6 @@ class GithubClient(GitRemoteClient):
         return res.json().get("ssh_url")
 
     def bootstrap_repo(self, repo_path: str, create_option: CreateRepoOption = None):
-        name = os.path.split(os.path.abspath(repo_path))[-1]
-        create_option = create_option or CreateRepoOption(name)
         create_result = self.create_repo(create_option)
         ssh_url = create_result.get("ssh_url")
 
@@ -72,5 +69,5 @@ class GithubClient(GitRemoteClient):
             os.system("git add .")
             os.system('git commit -m "Init"')
             os.system(f"git remote add origin {ssh_url}")
-            os.system(f"git branch -M main")
+            os.system("git branch -M main")
             os.system("git push -u origin main")
