@@ -5,3 +5,4 @@
 __pycache__
 *.sh
 dist
+.coverage
