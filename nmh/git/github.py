@@ -8,7 +8,10 @@ from typing import Optional
 from abc import ABC, abstractmethod
 import requests
 
-from nmh.pathutils import cd
+from nmh.osutils import cd
+
+
+INITIAL_COMMIT_MESSAGE = "Initiated with nmh 😎"
 
 
 class GitRemoteClient(ABC):  # pylint: disable=R0903
@@ -59,15 +62,21 @@ class GithubClient(GitRemoteClient):
 
         return res.json().get("ssh_url")
 
-    def bootstrap_repo(self, repo_path: str, create_option: CreateRepoOption = None):
-        create_result = self.create_repo(create_option)
-        ssh_url = create_result.get("ssh_url")
+    def bootstrap_repo(
+        self,
+        repo_path: str,
+        create_option: CreateRepoOption = None,
+        init_msg: str = INITIAL_COMMIT_MESSAGE,
+    ):
+        if not os.path.isdir(repo_path):
+            raise OSError(f"{repo_path} is not a valid directory")
 
+        ssh_url = self.create_repo(create_option)
         with cd(repo_path):
             os.system("rm -rf .git")
             os.system("git init")
             os.system("git add .")
-            os.system('git commit -m "Init"')
+            os.system(f'git commit -m "{init_msg}"')
             os.system(f"git remote add origin {ssh_url}")
             os.system("git branch -M main")
             os.system("git push -u origin main")
