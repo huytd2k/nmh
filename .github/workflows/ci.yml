@@ -31,6 +31,6 @@ jobs:
         run: poetry install
         if: steps.cache.output.cache-hit != 'true'
       - name: Linting
-        run: poetry run pylint .
+        run: poetry run pylint **/*.py
       - name: Testing
         run: poetry run pytest --cov . -n 2
