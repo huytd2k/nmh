@@ -33,6 +33,8 @@ jobs:
       - name: Linting
         run: poetry run pylint **/*.py
       - name: Testing and collect coverage
-        run: poetry run coverage run -m pytest tests/
+        run: |
+          poetry run coverage run -m pytest tests/
+          poetry run coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
