@@ -1,7 +1,8 @@
+import logging
 import os
 import click
 
-from nmh.git.github import CreateRepoOption, GithubClient
+from nmh.git.github import CreateRepoOption, FakeClient, GitManager, GithubClient
 
 
 @click.group()
@@ -22,10 +23,18 @@ def cli():
 @click.option(
     "-p", "--private", is_flag=True, default=False, help="Upload private repo"
 )
-def rpush(token, repo_dir, repo_name, private):
+@click.option(
+    "--dry", is_flag=True, default=False, help="Dry run, no remote is uploaded"
+)
+@click.option("--log-level", default="WARNING", help="Logging level")
+def bootstrap(token, repo_dir, repo_name, private, dry, log_level):
+    logging.basicConfig(level=log_level)
     client = GithubClient(token)
     repo_name = repo_name or os.path.split(os.path.abspath(repo_dir))[-1]
-    client.bootstrap_repo(repo_dir, CreateRepoOption(repo_name, private))
+    git_manager = GitManager(client) if not dry else GitManager(FakeClient())
+    git_manager.bootstrap_repo(
+        repo_dir, CreateRepoOption(repo_name, private), dry_run=dry
+    )
 
 
 cli()
